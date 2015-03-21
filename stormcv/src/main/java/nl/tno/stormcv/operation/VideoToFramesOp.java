@@ -92,7 +92,7 @@ public class VideoToFramesOp extends MediaListenerAdapter implements ISingleInpu
 		if(!(particle instanceof VideoChunk)) return result;
 		
 		VideoChunk video = (VideoChunk) particle;
-		frames = new ArrayList<>();
+		frames = new ArrayList<Frame>();
 		seqNum = video.getSequenceNr();
 		streamId = video.getStreamId();
 		

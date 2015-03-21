@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nl.tno.stormcv.example;
+package nl.tno.stormcv;
 
 import java.util.ArrayList;
 import java.util.List;

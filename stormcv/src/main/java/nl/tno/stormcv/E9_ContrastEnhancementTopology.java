@@ -1,27 +1,28 @@
 /**
  * 
  */
-package nl.tno.stormcv.example;
+package nl.tno.stormcv;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
-import backtype.storm.utils.Utils;
 import nl.tno.stormcv.StormCVConfig;
 import nl.tno.stormcv.batcher.SlidingWindowBatcher;
 import nl.tno.stormcv.bolt.BatchInputBolt;
 import nl.tno.stormcv.bolt.SingleInputBolt;
-import nl.tno.stormcv.example.util.GlobalContrastEnhancementOp;
-import nl.tno.stormcv.example.util.GlobalContrastEnhancementOp.CEAlgorithm;
+import nl.tno.stormcv.util.GlobalContrastEnhancementOp;
+import nl.tno.stormcv.util.GlobalContrastEnhancementOp.CEAlgorithm;
 import nl.tno.stormcv.fetcher.StreamFrameFetcher;
 import nl.tno.stormcv.model.Frame;
 import nl.tno.stormcv.model.serializer.FrameSerializer;
 import nl.tno.stormcv.operation.MjpegStreamingOp;
 import nl.tno.stormcv.spout.CVParticleSpout;
+import backtype.storm.Config;
+import backtype.storm.LocalCluster;
+import backtype.storm.topology.TopologyBuilder;
+import backtype.storm.tuple.Fields;
+import backtype.storm.utils.Utils;
+
 
 /**
  * @author John Schavemaker
@@ -52,7 +53,8 @@ public class E9_ContrastEnhancementTopology {
 
 		// some live camera feeds from http://webcam.prvgld.nl/
 		List<String> urls = new ArrayList<String>();
-		urls.add( "rtsp://streaming3.webcam.nl:1935/n224/n224.stream" );
+//		urls.add( "rtsp://streaming3.webcam.nl:1935/n224/n224.stream" );
+		urls.add( "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov" );
 		urls.add( "rtsp://streaming3.webcam.nl:1935/n233/n233.stream" );
 
 		int frameSkip = 13;
@@ -64,8 +66,7 @@ public class E9_ContrastEnhancementTopology {
 		builder.setSpout( "spout", new CVParticleSpout( new StreamFrameFetcher( urls ).frameSkip( frameSkip ) ), 1 );
 
 		// add bolt that does contrast enhancement (choose HSV_EQUALIZE_HIST or GRAY_EQUALIZE_HIST as algorithm)
-		builder.setBolt( "contrastenhancement", new SingleInputBolt( new GlobalContrastEnhancementOp().setAlgorithm( CEAlgorithm.HSV_EQUALIZE_HIST ) ), 1 )
-		.shuffleGrouping( "spout" );
+		builder.setBolt( "contrastenhancement", new SingleInputBolt( new GlobalContrastEnhancementOp().setAlgorithm( CEAlgorithm.HSV_EQUALIZE_HIST ) ), 1 ).shuffleGrouping( "spout" );
 
 		// add bolt that creates a web service on port 8558 enabling users to view the result
 		builder.setBolt( "streamer", new BatchInputBolt(
@@ -81,7 +82,7 @@ public class E9_ContrastEnhancementTopology {
 			// run in local mode
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology( "BackgroundSubtraction", conf, builder.createTopology() );
-			Utils.sleep( 120 * 1000 ); // run for one minute and then kill the topology
+			Utils.sleep( 300 * 1000 ); // run for five minutes and then kill the topology
 			cluster.shutdown();
 			System.exit( 1 );
 
