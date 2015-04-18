@@ -2,7 +2,9 @@ package nl.tno.stormcv;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import nl.tno.stormcv.batcher.SlidingWindowBatcher;
 import nl.tno.stormcv.bolt.BatchInputBolt;
 import nl.tno.stormcv.bolt.SingleInputBolt;
@@ -21,7 +23,7 @@ import backtype.storm.utils.Utils;
 
 public class E1_GrayScaledTopology {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		// first some global (topology configuration)
 		StormCVConfig conf = new StormCVConfig();
 		conf.setNumWorkers(4); // number of workers in the topology
@@ -30,12 +32,16 @@ public class E1_GrayScaledTopology {
 		conf.put(Config.TOPOLOGY_ENABLE_MESSAGE_TIMEOUTS, true); // True if Storm should timeout messages or not.
 		conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS , 10); // The maximum amount of time given to the topology to fully process a message emitted by a spout (default = 30)
 		conf.put(StormCVConfig.STORMCV_SPOUT_FAULTTOLERANT, false); // indicates if the spout must be fault tolerant; i.e. spouts do NOT! replay tuples on fail
-		conf.put(StormCVConfig.STORMCV_CACHES_TIMEOUT_SEC, 30); // TTL (seconds) for all elements in all caches throughout the topology (avoids memory overload)
-		
+		conf.put(StormCVConfig.STORMCV_CACHES_TIMEOUT_SEC, 30); // TTL (seconds) for all elements in all caches throughout the topology (avoids memory overload)		
 		List<String> urls = new ArrayList<String>();
-//		urls.add( "rtsp://streaming3.webcam.nl:1935/n224/n224.stream" );
-		urls.add( "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov" );
-		urls.add("rtsp://streaming3.webcam.nl:1935/n233/n233.stream");
+		
+		String content = new String(Files.readAllBytes(Paths.get("src/main/java/nl/tno/stormcv/liveStreamConf.txt")));
+		String lines[] = content.split("\\r?\\n");
+		for (String line: lines) {
+			urls.add(line);
+		}	
+//		urls.add( "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov" );
+//		urls.add("rtsp://streaming3.webcam.nl:1935/n233/n233.stream");
 
 		int frameSkip = 13;
 		
