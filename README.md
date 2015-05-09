@@ -40,6 +40,10 @@ Make sure to replace the "IP" with your network IP and use "8558" for Port. For 
 ## Demo on Youtube 
 [https://youtu.be/p3Xm31XW4OE](https://youtu.be/p3Xm31XW4OE)
 
+
+## Additional Information
+Please see the documents folder, which contains our final report and final presentation slides. For troubleshooting and general inquiry, please refer to our final report for team members' contact information.
+
 ## License
 Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
